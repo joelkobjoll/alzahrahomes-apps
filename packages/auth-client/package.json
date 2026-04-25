@@ -1,15 +1,34 @@
 {
   "name": "@alzahra/auth-client",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
+  "description": "Typed auth SDK, session hooks, and permission helpers",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
-    "build": "echo 'Not yet implemented'",
-    "dev": "echo 'Not yet implemented'",
-    "lint": "echo 'Not yet implemented'",
-    "test": "echo 'Not yet implemented'",
-    "typecheck": "echo 'Not yet implemented'",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src/**/*.ts",
+    "test": "echo 'No tests yet'",
+    "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@alzahra/auth-config": "workspace:*",
+    "react": "^18.3.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@alzahra/config": "workspace:*",
+    "@types/node": "^20.12.12",
+    "@types/react": "^18.3.3",
+    "typescript": "^5.4.5"
   }
 }
