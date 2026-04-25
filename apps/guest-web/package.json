@@ -1,13 +1,32 @@
 {
   "name": "@alzahra/guest-web",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "echo 'Not yet implemented'",
-    "dev": "echo 'Not yet implemented'",
-    "lint": "echo 'Not yet implemented'",
-    "test": "echo 'Not yet implemented'",
-    "typecheck": "echo 'Not yet implemented'",
-    "clean": "rm -rf .next dist"
+    "build": "astro build",
+    "dev": "astro dev",
+    "lint": "eslint src/**/*.{ts,tsx,astro}",
+    "test": "echo 'No tests yet'",
+    "typecheck": "astro check && tsc --noEmit",
+    "clean": "rm -rf dist .astro"
+  },
+  "dependencies": {
+    "@alzahra/types": "workspace:*",
+    "@alzahra/ui": "workspace:*",
+    "astro": "^5.0.0",
+    "leaflet": "^1.9.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@alzahra/config": "workspace:*",
+    "@astrojs/react": "^4.0.0",
+    "@types/leaflet": "^1.9.12",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "html5-qrcode": "^2.3.8",
+    "tailwindcss": "^4.0.0-alpha",
+    "typescript": "^5.4.5"
   }
 }

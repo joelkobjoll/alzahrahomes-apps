@@ -1,0 +1,26 @@
+---
+import MainLayout from '~/layouts/MainLayout.astro';
+import TokenEntry from '~/components/islands/TokenEntry';
+---
+
+<MainLayout title="Welcome — Alzahra Homes" hideNav>
+  <div class="flex flex-col items-center justify-center min-h-[100dvh] px-6 py-12">
+    <div class="text-center mb-10">
+      <h1 class="text-4xl font-bold text-stone-900 mb-3 tracking-tight">Alzahra Homes</h1>
+      <p class="text-stone-500 text-base leading-relaxed max-w-xs mx-auto">
+        Your personal guide to an unforgettable stay. Enter your guest token to get started.
+      </p>
+    </div>
+
+    <div class="w-full max-w-sm">
+      <TokenEntry client:load />
+    </div>
+
+    <div class="mt-auto pt-12 text-center">
+      <p class="text-xs text-stone-400">
+        Need help? Contact your host or visit
+        <a href="https://alzahra.es" class="text-terracotta-600 hover:text-terracotta-700">alzahra.es</a>
+      </p>
+    </div>
+  </div>
+</MainLayout>

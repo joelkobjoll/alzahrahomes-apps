@@ -1,0 +1,112 @@
+---
+import MainLayout from '~/layouts/MainLayout.astro';
+import MapView from '~/components/islands/MapView';
+import CategoryFilter from '~/components/islands/CategoryFilter';
+import RecommendationCard from '~/components/islands/RecommendationCard';
+import type { Property, Recommendation } from '@alzahra/types/domain';
+
+const { token } = Astro.params;
+
+if (!token) {
+  return Astro.redirect('/');
+}
+
+const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'https://api.alzahra.es';
+
+let property: Property | null = null;
+let recommendations: Recommendation[] = [];
+let error: string | null = null;
+
+try {
+  const [stayRes, recsRes] = await Promise.all([
+    fetch(`${apiUrl}/v1/guest/stay`, {
+      headers: { 'x-guest-token': token },
+    }),
+    fetch(`${apiUrl}/v1/guest/recommendations`, {
+      headers: { 'x-guest-token': token },
+    }),
+  ]);
+
+  if (!stayRes.ok) {
+    if (stayRes.status === 401 || stayRes.status === 403) {
+      return Astro.redirect('/?error=invalid_token');
+    }
+    throw new Error(`Failed to fetch stay details: ${stayRes.status}`);
+  }
+
+  const stayData = await stayRes.json();
+  property = stayData.property ?? null;
+
+  if (recsRes.ok) {
+    const recsData = await recsRes.json();
+    recommendations = recsData.recommendations ?? recsData.data ?? [];
+  }
+} catch (err) {
+  error = err instanceof Error ? err.message : 'Unknown error';
+}
+
+const pageTitle = property?.name ? `Explore — ${property.name}` : 'Explore';
+---
+
+<MainLayout title={pageTitle}>
+  {error && (
+    <div class="px-5 py-8 text-center">
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-terracotta-100 text-terracotta-600 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+      </div>
+      <h2 class="text-lg font-semibold text-stone-900 mb-1">Could not load recommendations</h2>
+      <p class="text-sm text-stone-500 mb-4">{error}</p>
+      <a href={`/stay/${token}/my-flat`} class="inline-flex items-center justify-center h-10 px-5 rounded-lg bg-primary text-primary-foreground text-sm font-medium">Back to My Flat</a>
+    </div>
+  )}
+
+  {!error && (
+    <div class="flex flex-col">
+      <div class="px-5 pt-5 pb-3">
+        <h1 class="text-2xl font-bold text-stone-900">Explore</h1>
+        <p class="text-sm text-stone-500 mt-1">Recommendations near your stay</p>
+      </div>
+
+      <div class="px-5 pb-3">
+        <CategoryFilter client:load />
+      </div>
+
+      {property?.latitude && property?.longitude && (
+        <div class="px-5 pb-5">
+          <MapView
+            client:load
+            lat={parseFloat(property.latitude)}
+            lng={parseFloat(property.longitude)}
+            markers={recommendations
+              .filter((r: Recommendation) => r.filters?.lat && r.filters?.lng)
+              .map((r: Recommendation) => ({
+                id: r.id,
+                lat: Number(r.filters!.lat),
+                lng: Number(r.filters!.lng),
+                title: r.title,
+              }))}
+          />
+        </div>
+      )}
+
+      <div class="px-5 pb-8">
+        <h2 class="text-lg font-semibold text-stone-900 mb-3">Nearby Picks</h2>
+        {recommendations.length === 0 && (
+          <p class="text-sm text-stone-500">No recommendations available yet.</p>
+        )}
+        <div class="space-y-3">
+          {recommendations.map((rec: Recommendation) => (
+            <RecommendationCard
+              client:visible
+              id={rec.id}
+              title={rec.title}
+              description={rec.description}
+              type={rec.type}
+              score={rec.score ? parseFloat(rec.score) : null}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )}
+</MainLayout>

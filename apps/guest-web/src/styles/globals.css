@@ -1,0 +1,46 @@
+@import '@alzahra/ui/styles.css';
+
+/* ============================================================================
+   Guest Web — Global Styles
+   Mobile-first PWA with 480px max-width constraint
+   ============================================================================ */
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: var(--color-foreground);
+    background-color: var(--color-background);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    min-height: 100dvh;
+    line-height: 1.5;
+    overscroll-behavior-y: none;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', var(--font-serif);
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--color-stone-900);
+  }
+}
+
+@layer utilities {
+  .app-container {
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 100dvh;
+    position: relative;
+    background-color: var(--color-surface);
+    box-shadow: 0 0 24px rgb(0 0 0 / 0.08);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}

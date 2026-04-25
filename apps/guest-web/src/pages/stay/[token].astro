@@ -1,0 +1,33 @@
+---
+export const prerender = false;
+
+const { token } = Astro.params;
+
+if (!token) {
+  return Astro.redirect('/');
+}
+
+// Validate token server-side via API
+const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'https://api.alzahra.es';
+let valid = false;
+
+try {
+  const res = await fetch(`${apiUrl}/v1/guest/validate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-guest-token': token,
+    },
+    body: JSON.stringify({ token }),
+  });
+  valid = res.ok;
+} catch {
+  valid = false;
+}
+
+if (!valid) {
+  return Astro.redirect(`/?error=invalid_token`);
+}
+
+return Astro.redirect(`/stay/${token}/my-flat`);
+---

@@ -1,0 +1,75 @@
+---
+import '~/styles/globals.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  hideNav?: boolean;
+}
+
+const { title, description = 'Your stay guide', hideNav = false } = Astro.props;
+const { pathname } = Astro.url;
+
+function isActive(path: string): boolean {
+  if (path === '/my-flat') return pathname.endsWith('/my-flat');
+  if (path === '/explore') return pathname.endsWith('/explore');
+  return false;
+}
+
+const tokenMatch = pathname.match(/\/stay\/([^/]+)/);
+const token = tokenMatch?.[1] ?? '';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#c04e2a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="description" content={description} />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <title>{title}</title>
+  </head>
+  <body class="bg-sand-50">
+    <div class="app-container">
+      <main class="pb-20 safe-bottom">
+        <slot />
+      </main>
+
+      {!hideNav && token && (
+        <nav class="fixed bottom-0 left-0 right-0 z-50">
+          <div class="max-w-[480px] mx-auto h-16 bg-surface/90 backdrop-blur-md border-t border-border flex items-center justify-around safe-bottom">
+            <a
+              href={`/stay/${token}/my-flat`}
+              class={`flex flex-col items-center justify-center w-16 h-full gap-0.5 transition-colors ${isActive('/my-flat') ? 'text-primary' : 'text-stone-400'}`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <span class="text-[10px] font-medium">My Flat</span>
+            </a>
+            <a
+              href={`/stay/${token}/explore`}
+              class={`flex flex-col items-center justify-center w-16 h-full gap-0.5 transition-colors ${isActive('/explore') ? 'text-primary' : 'text-stone-400'}`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+              <span class="text-[10px] font-medium">Explore</span>
+            </a>
+          </div>
+        </nav>
+      )}
+    </div>
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
+  </body>
+</html>
