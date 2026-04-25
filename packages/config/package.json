@@ -1,14 +1,43 @@
 {
   "name": "@alzahra/config",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
-  "main": "./index.js",
+  "description": "Shared configuration presets for TypeScript, ESLint, and Prettier",
+  "type": "module",
+  "exports": {
+    "./typescript": {
+      "import": "./tsconfig.base.json",
+      "require": "./tsconfig.base.json"
+    },
+    "./eslint": {
+      "import": "./eslint.config.js",
+      "require": "./eslint.config.js"
+    },
+    "./prettier": {
+      "import": "./prettier.config.js",
+      "require": "./prettier.config.js"
+    }
+  },
+  "files": [
+    "tsconfig.base.json",
+    "eslint.config.js",
+    "prettier.config.js"
+  ],
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.8.0",
+    "@typescript-eslint/parser": "^7.8.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5"
+  },
   "scripts": {
     "build": "echo 'No build step'",
     "dev": "echo 'No dev step'",
-    "lint": "echo 'Not yet implemented'",
-    "test": "echo 'Not yet implemented'",
-    "typecheck": "echo 'Not yet implemented'",
+    "lint": "echo 'No lint step'",
+    "test": "echo 'No test step'",
+    "typecheck": "echo 'No typecheck step'",
     "clean": "echo 'No clean step'"
   }
 }

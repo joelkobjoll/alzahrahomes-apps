@@ -1,15 +1,48 @@
 {
   "name": "@alzahra/ui",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
+  "description": "Shared UI component library with Tailwind CSS v4 and design system tokens",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./styles.css": "./src/styles.css",
+    "./tailwind.config": {
+      "import": "./tailwind.config.js",
+      "require": "./tailwind.config.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src/styles.css",
+    "tailwind.config.js"
+  ],
   "scripts": {
-    "build": "echo 'Not yet implemented'",
-    "dev": "echo 'Not yet implemented'",
-    "lint": "echo 'Not yet implemented'",
-    "test": "echo 'Not yet implemented'",
-    "typecheck": "echo 'Not yet implemented'",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src/**/*.ts",
+    "test": "echo 'No tests yet'",
+    "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.3.0"
+  },
+  "devDependencies": {
+    "@alzahra/config": "workspace:*",
+    "@types/react": "^18.3.2",
+    "react": "^18.3.1",
+    "tailwindcss": "^4.0.0-alpha",
+    "typescript": "^5.4.5"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
   }
 }

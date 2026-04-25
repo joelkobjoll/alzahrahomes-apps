@@ -1,15 +1,35 @@
 {
   "name": "@alzahra/types",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
+  "description": "Shared TypeScript type definitions for Alzahra Homes",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./api": {
+      "import": "./dist/api.js",
+      "types": "./dist/api.d.ts"
+    },
+    "./domain": {
+      "import": "./dist/domain.js",
+      "types": "./dist/domain.d.ts"
+    }
+  },
   "scripts": {
-    "build": "echo 'Not yet implemented'",
-    "dev": "echo 'Not yet implemented'",
-    "lint": "echo 'Not yet implemented'",
-    "test": "echo 'Not yet implemented'",
-    "typecheck": "echo 'Not yet implemented'",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src/**/*.ts",
+    "test": "echo 'No tests yet'",
+    "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@alzahra/config": "workspace:*",
+    "typescript": "^5.4.5"
   }
 }

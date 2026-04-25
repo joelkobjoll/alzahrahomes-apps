@@ -1,15 +1,46 @@
 {
   "name": "@alzahra/db",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
+  "description": "Database schema, client, and migrations using Drizzle ORM + PostgreSQL + PostGIS",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./schema": {
+      "import": "./dist/schema/index.js",
+      "types": "./dist/schema/index.d.ts"
+    },
+    "./client": {
+      "import": "./dist/client.js",
+      "types": "./dist/client.d.ts"
+    }
+  },
   "scripts": {
-    "build": "echo 'Not yet implemented'",
-    "dev": "echo 'Not yet implemented'",
-    "lint": "echo 'Not yet implemented'",
-    "test": "echo 'Not yet implemented'",
-    "typecheck": "echo 'Not yet implemented'",
-    "clean": "rm -rf dist"
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src/**/*.ts",
+    "test": "echo 'No tests yet'",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:check": "drizzle-kit check"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.30.10",
+    "postgres": "^3.4.4"
+  },
+  "devDependencies": {
+    "@alzahra/config": "workspace:*",
+    "@types/node": "^20.12.12",
+    "drizzle-kit": "^0.21.4",
+    "typescript": "^5.4.5"
   }
 }
