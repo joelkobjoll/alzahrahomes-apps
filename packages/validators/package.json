@@ -1,0 +1,15 @@
+{
+  "name": "@alzahra/validators",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "echo 'Not yet implemented'",
+    "dev": "echo 'Not yet implemented'",
+    "lint": "echo 'Not yet implemented'",
+    "test": "echo 'Not yet implemented'",
+    "typecheck": "echo 'Not yet implemented'",
+    "clean": "rm -rf dist"
+  }
+}

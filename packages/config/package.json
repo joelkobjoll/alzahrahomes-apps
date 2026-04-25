@@ -1,0 +1,14 @@
+{
+  "name": "@alzahra/config",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./index.js",
+  "scripts": {
+    "build": "echo 'No build step'",
+    "dev": "echo 'No dev step'",
+    "lint": "echo 'Not yet implemented'",
+    "test": "echo 'Not yet implemented'",
+    "typecheck": "echo 'Not yet implemented'",
+    "clean": "echo 'No clean step'"
+  }
+}
