@@ -1,0 +1,97 @@
+{
+  "$schema": "https://dokploy.com/schema/dokploy.json",
+  "name": "alzahrahomes-apps",
+  "description": "Alzahra Homes hospitality platform — multi-service Dokploy deployment",
+  "type": "compose",
+  "compose": {
+    "file": "docker-compose.yml",
+    "path": "."
+  },
+  "services": {
+    "postgres": {
+      "type": "database",
+      "description": "PostgreSQL 16 + PostGIS",
+      "internalPort": 5432,
+      "healthCheck": {
+        "path": null,
+        "command": "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+      }
+    },
+    "redis": {
+      "type": "database",
+      "description": "Redis for BullMQ and caching",
+      "internalPort": 6379,
+      "healthCheck": {
+        "path": null,
+        "command": "redis-cli ping"
+      }
+    },
+    "minio": {
+      "type": "storage",
+      "description": "S3-compatible object storage",
+      "internalPort": 9000,
+      "consolePort": 9001,
+      "healthCheck": {
+        "path": "/minio/health/live",
+        "port": 9000
+      }
+    },
+    "auth": {
+      "type": "app",
+      "description": "Auth microservice (Hono)",
+      "internalPort": 4001,
+      "healthCheck": {
+        "path": "/health",
+        "port": 4001
+      },
+      "domains": ["${AUTH_DOMAIN}"]
+    },
+    "api": {
+      "type": "app",
+      "description": "Main API service (Hono)",
+      "internalPort": 4000,
+      "healthCheck": {
+        "path": "/health",
+        "port": 4000
+      },
+      "domains": ["${API_DOMAIN}"]
+    },
+    "guest-web": {
+      "type": "app",
+      "description": "Guest-facing static web (Astro + nginx)",
+      "internalPort": 80,
+      "healthCheck": {
+        "path": "/health",
+        "port": 80
+      },
+      "domains": ["${GUEST_WEB_DOMAIN}"]
+    },
+    "admin-web": {
+      "type": "app",
+      "description": "Admin dashboard (Next.js standalone)",
+      "internalPort": 3000,
+      "healthCheck": {
+        "path": "/api/health",
+        "port": 3000
+      },
+      "domains": ["${ADMIN_WEB_DOMAIN}"]
+    }
+  },
+  "volumes": [
+    {
+      "name": "postgres-data",
+      "description": "PostgreSQL persistent data",
+      "backup": true
+    },
+    {
+      "name": "redis-data",
+      "description": "Redis AOF persistence",
+      "backup": true
+    },
+    {
+      "name": "minio-data",
+      "description": "MinIO object storage data",
+      "backup": true
+    }
+  ]
+}
