@@ -1,4 +1,4 @@
-import type { PropertyCategory } from '@alzahra/validators';
+import type { PropertyCategory } from '../../domain/entities/property.js';
 
 export interface CreatePropertyDTO {
   name: string;

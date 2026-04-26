@@ -1,4 +1,4 @@
-import type { PropertyCategory, PropertyStatus } from '@alzahra/validators';
+import type { PropertyCategory, PropertyStatus } from '../../domain/entities/property.js';
 
 export interface UpdatePropertyDTO {
   name?: string | undefined;

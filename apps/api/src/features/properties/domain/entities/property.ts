@@ -1,4 +1,5 @@
-import type { PropertyCategory, PropertyStatus } from '@alzahra/validators';
+export type PropertyCategory = 'apartment' | 'villa' | 'house' | 'studio' | 'penthouse' | 'townhouse' | 'bungalow' | 'cottage' | 'other';
+export type PropertyStatus = 'draft' | 'published' | 'archived';
 
 export interface Property {
   id: string;
@@ -11,13 +12,13 @@ export interface Property {
   city: string | null;
   country: string | null;
   postalCode: string | null;
-  latitude: string | null;
-  longitude: string | null;
+  latitude: number | null;
+  longitude: number | null;
   geom: unknown | null;
   bedrooms: number | null;
-  bathrooms: string | null;
+  bathrooms: number | null;
   maxGuests: number | null;
-  pricePerNight: string | null;
+  pricePerNight: number | null;
   currency: string;
   amenities: string[] | null;
   images: string[] | null;
@@ -29,42 +30,42 @@ export interface Property {
 export interface CreatePropertyInput {
   name: string;
   slug: string;
-  description?: string | null | undefined;
+  description?: string | null;
   category: PropertyCategory;
-  address?: string | null | undefined;
-  city?: string | null | undefined;
-  country?: string | null | undefined;
-  postalCode?: string | null | undefined;
-  latitude?: number | null | undefined;
-  longitude?: number | null | undefined;
-  bedrooms?: number | null | undefined;
-  bathrooms?: number | null | undefined;
-  maxGuests?: number | null | undefined;
-  pricePerNight?: number | null | undefined;
-  currency?: string | undefined;
-  amenities?: string[] | null | undefined;
-  images?: string[] | null | undefined;
-  ownerId?: string | null | undefined;
+  address?: string | null;
+  city?: string | null;
+  country?: string | null;
+  postalCode?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+  maxGuests?: number | null;
+  pricePerNight?: number | null;
+  currency?: string;
+  amenities?: string[] | null;
+  images?: string[] | null;
+  ownerId?: string | null;
 }
 
 export interface UpdatePropertyInput {
-  name?: string | undefined;
-  slug?: string | undefined;
-  description?: string | null | undefined;
-  category?: PropertyCategory | undefined;
-  status?: PropertyStatus | undefined;
-  address?: string | null | undefined;
-  city?: string | null | undefined;
-  country?: string | null | undefined;
-  postalCode?: string | null | undefined;
-  latitude?: number | null | undefined;
-  longitude?: number | null | undefined;
-  bedrooms?: number | null | undefined;
-  bathrooms?: number | null | undefined;
-  maxGuests?: number | null | undefined;
-  pricePerNight?: number | null | undefined;
-  currency?: string | undefined;
-  amenities?: string[] | null | undefined;
-  images?: string[] | null | undefined;
-  ownerId?: string | null | undefined;
+  name?: string;
+  slug?: string;
+  description?: string | null;
+  category?: PropertyCategory;
+  status?: PropertyStatus;
+  address?: string | null;
+  city?: string | null;
+  country?: string | null;
+  postalCode?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+  maxGuests?: number | null;
+  pricePerNight?: number | null;
+  currency?: string;
+  amenities?: string[] | null;
+  images?: string[] | null;
+  ownerId?: string | null;
 }

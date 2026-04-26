@@ -1,4 +1,4 @@
-import type { TokenType } from '@alzahra/validators';
+export type TokenType = 'api' | 'refresh' | 'reset_password' | 'verify_email';
 
 export interface Token {
   id: string;

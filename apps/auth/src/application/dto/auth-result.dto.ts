@@ -1,4 +1,4 @@
-import type { Role } from '@alzahra/auth-config';
+import type { Role } from '../../domain/entities/user.js';
 
 export interface AuthUserDTO {
   id: string;

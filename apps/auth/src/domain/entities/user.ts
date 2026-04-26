@@ -1,4 +1,4 @@
-import type { Role } from '@alzahra/auth-config';
+export type Role = 'guest' | 'admin' | 'owner' | 'staff';
 
 export interface User {
   id: string;

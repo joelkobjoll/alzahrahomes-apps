@@ -1,4 +1,4 @@
-import type { RecommendationType } from '@alzahra/validators';
+export type RecommendationType = 'manual' | 'ai_generated' | 'trending' | 'seasonal';
 
 export interface Recommendation {
   id: string;

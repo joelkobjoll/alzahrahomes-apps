@@ -1,4 +1,4 @@
-import type { TokenType } from '@alzahra/validators';
+import type { TokenType } from '../../domain/entities/token.js';
 
 export interface GenerateTokenDTO {
   userId: string;

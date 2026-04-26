@@ -1,4 +1,4 @@
-import type { BookingStatus } from '@alzahra/validators';
+export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show';
 
 export interface Booking {
   id: string;

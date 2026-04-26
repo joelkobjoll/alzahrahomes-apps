@@ -43,7 +43,7 @@ export const authUserSchema = z.object({
   email: z.string().email(),
   firstName: z.string(),
   lastName: z.string(),
-  role: z.enum(['guest', 'super_admin', 'admin', 'property_manager', 'operations', 'support']),
+  role: z.enum(['guest', 'admin', 'owner', 'staff']),
 });
 
 export const loginResponseSchema = z.object({
