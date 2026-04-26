@@ -2,44 +2,42 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api-client';
-import type { LoginRequest, LoginResponse } from '@alzahra/types';
+import { auth, isApiError } from '@/lib/api';
+import type { LoginRequest, UserRole } from '@alzahra/types';
 
-interface AuthUser {
+interface SafeUser {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
-  role: string;
+  role: UserRole;
 }
 
 interface AuthState {
-  user: AuthUser | null;
+  user: SafeUser | null;
   isLoading: boolean;
   isAuthenticated: boolean;
 }
 
-async function fetchMe(): Promise<AuthUser | null> {
+async function fetchMe(): Promise<SafeUser | null> {
   try {
-    const res = await apiClient.get('/auth/me');
-    if (!res.ok) return null;
-    return (await res.json()) as AuthUser;
-  } catch {
-    return null;
+    const res = await auth.get<{ user: SafeUser }>('/me');
+    return res.user ?? null;
+  } catch (err) {
+    if (isApiError(err) && err.status === 401) {
+      return null;
+    }
+    throw err;
   }
 }
 
-async function loginApi(credentials: LoginRequest): Promise<LoginResponse> {
-  const res = await apiClient.post('/auth/login', credentials);
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ message: 'Login failed' }));
-    throw new Error(err.message ?? 'Login failed');
-  }
-  return (await res.json()) as LoginResponse;
+async function loginApi(credentials: LoginRequest): Promise<SafeUser> {
+  const res = await auth.post<{ user: SafeUser }>('/login', credentials);
+  return res.user;
 }
 
 async function logoutApi(): Promise<void> {
-  await apiClient.post('/auth/logout');
+  await auth.post('/logout');
 }
 
 export function useAuth() {

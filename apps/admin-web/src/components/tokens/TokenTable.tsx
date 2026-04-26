@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+import { useRevokeToken } from '@/hooks/use-tokens';
 import type { Token } from '@alzahra/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +13,24 @@ interface TokenTableProps {
 }
 
 export function TokenTable({ data, isLoading }: TokenTableProps) {
+  const revokeMutation = useRevokeToken();
+  const [revokingId, setRevokingId] = useState<string | null>(null);
+
+  const isActive = (token: Token) => {
+    if (token.revokedAt) return false;
+    if (!token.expiresAt) return true;
+    return new Date(token.expiresAt) > new Date();
+  };
+
+  const handleRevoke = async (id: string) => {
+    setRevokingId(id);
+    try {
+      await revokeMutation.mutateAsync(id);
+    } finally {
+      setRevokingId(null);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex h-48 items-center justify-center">
@@ -26,12 +46,6 @@ export function TokenTable({ data, isLoading }: TokenTableProps) {
       </div>
     );
   }
-
-  const isActive = (token: Token) => {
-    if (token.revokedAt) return false;
-    if (!token.expiresAt) return true;
-    return new Date(token.expiresAt) > new Date();
-  };
 
   return (
     <div className="overflow-x-auto rounded-md border">
@@ -59,8 +73,17 @@ export function TokenTable({ data, isLoading }: TokenTableProps) {
                 {token.expiresAt ? new Date(token.expiresAt).toLocaleDateString() : 'Never'}
               </td>
               <td className="px-4 py-3 text-right">
-                <Button variant="ghost" size="sm">
-                  Revoke
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={!isActive(token) || revokingId === token.id}
+                  onClick={() => handleRevoke(token.id)}
+                >
+                  {revokingId === token.id ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    'Revoke'
+                  )}
                 </Button>
               </td>
             </tr>

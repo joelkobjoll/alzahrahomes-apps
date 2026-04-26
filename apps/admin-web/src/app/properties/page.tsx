@@ -1,6 +1,7 @@
 'use client';
 
 import { useProperties } from '@/hooks/use-properties';
+import { AuthGuard } from '@/components/layout/AuthGuard';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { MobileNav } from '@/components/layout/MobileNav';
@@ -9,8 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
-export default function PropertiesPage() {
-  const { data: properties, isLoading } = useProperties();
+function PropertiesContent() {
+  const { data, isLoading } = useProperties({ limit: 50 });
 
   return (
     <div className="flex min-h-screen bg-muted/40">
@@ -31,9 +32,17 @@ export default function PropertiesPage() {
               </Link>
             </Button>
           </div>
-          <PropertyTable data={properties ?? []} isLoading={isLoading} />
+          <PropertyTable data={data?.items ?? []} isLoading={isLoading} />
         </main>
       </div>
     </div>
+  );
+}
+
+export default function PropertiesPage() {
+  return (
+    <AuthGuard>
+      <PropertiesContent />
+    </AuthGuard>
   );
 }

@@ -1,17 +1,20 @@
 'use client';
 
 import { useParams } from 'next/navigation';
+import { useProperty } from '@/hooks/use-properties';
+import { AuthGuard } from '@/components/layout/AuthGuard';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { PropertyForm } from '@/components/properties/PropertyForm';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
-export default function PropertyDetailPage() {
+function PropertyDetailContent() {
   const params = useParams();
   const id = params.id as string;
+  const { data: property, isLoading } = useProperty(id);
 
   return (
     <div className="flex min-h-screen bg-muted/40">
@@ -27,12 +30,29 @@ export default function PropertyDetailPage() {
                 Back to properties
               </Link>
             </Button>
-            <h1 className="text-2xl font-bold tracking-tight">Edit Property</h1>
+            <h1 className="text-2xl font-bold tracking-tight">
+              {isLoading ? 'Loading…' : property?.name ?? 'Edit Property'}
+            </h1>
             <p className="text-muted-foreground">ID: {id}</p>
           </div>
-          <PropertyForm propertyId={id} />
+
+          {isLoading ? (
+            <div className="flex h-48 items-center justify-center">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <PropertyForm propertyId={id} initialData={property ?? undefined} />
+          )}
         </main>
       </div>
     </div>
+  );
+}
+
+export default function PropertyDetailPage() {
+  return (
+    <AuthGuard>
+      <PropertyDetailContent />
+    </AuthGuard>
   );
 }

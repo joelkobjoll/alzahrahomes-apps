@@ -1,5 +1,6 @@
 'use client';
 
+import { AuthGuard } from '@/components/layout/AuthGuard';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { MobileNav } from '@/components/layout/MobileNav';
@@ -8,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-export default function NewPropertyPage() {
+function NewPropertyContent() {
   return (
     <div className="flex min-h-screen bg-muted/40">
       <Sidebar className="hidden lg:flex" />
@@ -30,5 +31,13 @@ export default function NewPropertyPage() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function NewPropertyPage() {
+  return (
+    <AuthGuard>
+      <NewPropertyContent />
+    </AuthGuard>
   );
 }

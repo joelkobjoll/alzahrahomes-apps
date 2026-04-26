@@ -1,5 +1,8 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
+import { desc, count } from 'drizzle-orm';
+import * as schema from '@alzahra/db/schema';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import type { GenerateTokenUseCase } from '../application/use-cases/generate-token.use-case.js';
 import type { ValidateTokenUseCase } from '../application/use-cases/validate-token.use-case.js';
 import type { RevokeTokenUseCase } from '../application/use-cases/revoke-token.use-case.js';
@@ -9,6 +12,7 @@ import { TokenExpiredError } from '../domain/errors/token-expired-error.js';
 import { TokenRevokedError } from '../domain/errors/token-revoked-error.js';
 
 export interface TokensDI {
+  db: PostgresJsDatabase<typeof schema>;
   generateTokenUseCase: GenerateTokenUseCase;
   validateTokenUseCase: ValidateTokenUseCase;
   revokeTokenUseCase: RevokeTokenUseCase;
@@ -28,6 +32,23 @@ const extendSchema = z.object({
 
 export function createTokensRoutes(di: TokensDI) {
   const app = new Hono();
+
+  app.get('/', async (c) => {
+    const page = Number(c.req.query('page') ?? '1');
+    const limit = Number(c.req.query('limit') ?? '20');
+    const offset = (page - 1) * limit;
+
+    const items = await di.db.query.tokens.findMany({
+      limit,
+      offset,
+      orderBy: [desc(schema.tokens.createdAt)],
+    });
+
+    const countResult = await di.db.select({ value: count() }).from(schema.tokens);
+    const total = Number(countResult[0]?.value ?? 0);
+
+    return c.json({ data: { items, total, page, limit }, error: null });
+  });
 
   app.post('/', async (c) => {
     const body = generateSchema.parse(await c.req.json());

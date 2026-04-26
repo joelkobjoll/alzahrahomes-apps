@@ -2,14 +2,15 @@
 
 import { useTokens } from '@/hooks/use-tokens';
 import { usePermissions } from '@/hooks/use-permissions';
+import { AuthGuard } from '@/components/layout/AuthGuard';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { TokenTable } from '@/components/tokens/TokenTable';
 import { TokenGenerator } from '@/components/tokens/TokenGenerator';
 
-export default function TokensPage() {
-  const { data: tokens, isLoading } = useTokens();
+function TokensContent() {
+  const { data, isLoading } = useTokens();
   const { can } = usePermissions();
 
   return (
@@ -30,9 +31,17 @@ export default function TokensPage() {
             </div>
           )}
 
-          <TokenTable data={tokens ?? []} isLoading={isLoading} />
+          <TokenTable data={data?.items ?? []} isLoading={isLoading} />
         </main>
       </div>
     </div>
+  );
+}
+
+export default function TokensPage() {
+  return (
+    <AuthGuard>
+      <TokensContent />
+    </AuthGuard>
   );
 }

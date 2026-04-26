@@ -2,6 +2,11 @@
 
 import { useAuth } from '@/hooks/use-auth';
 import { usePermissions } from '@/hooks/use-permissions';
+import { useProperties } from '@/hooks/use-properties';
+import { useTokens } from '@/hooks/use-tokens';
+import { useBookings } from '@/hooks/use-bookings';
+import { useMessages } from '@/hooks/use-messages';
+import { AuthGuard } from '@/components/layout/AuthGuard';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { MobileNav } from '@/components/layout/MobileNav';
@@ -10,9 +15,18 @@ import { RevenueChart } from '@/components/charts/RevenueChart';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Building2, KeyRound, CalendarDays, MessageSquare } from 'lucide-react';
 
-export default function DashboardPage() {
+function DashboardContent() {
   const { user } = useAuth();
   const { can } = usePermissions();
+  const { data: propertiesData } = useProperties({ limit: 1 });
+  const { data: tokensData } = useTokens();
+  const { data: bookingsData } = useBookings({ limit: 1 });
+  const { data: messagesData } = useMessages({ limit: 1 });
+
+  const propertyCount = propertiesData?.total ?? 0;
+  const tokenCount = tokensData?.total ?? 0;
+  const bookingCount = bookingsData?.total ?? 0;
+  const messageCount = messagesData?.total ?? 0;
 
   return (
     <div className="flex min-h-screen bg-muted/40">
@@ -33,8 +47,10 @@ export default function DashboardPage() {
                 <Building2 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">12</div>
-                <p className="text-xs text-muted-foreground">3 pending review</p>
+                <div className="text-2xl font-bold">{propertyCount}</div>
+                <p className="text-xs text-muted-foreground">
+                  {propertyCount > 0 ? 'Active listings' : 'No properties yet'}
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -43,8 +59,10 @@ export default function DashboardPage() {
                 <KeyRound className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">48</div>
-                <p className="text-xs text-muted-foreground">+4 this week</p>
+                <div className="text-2xl font-bold">{tokenCount}</div>
+                <p className="text-xs text-muted-foreground">
+                  {tokenCount > 0 ? 'Total tokens issued' : 'No tokens yet'}
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -53,8 +71,10 @@ export default function DashboardPage() {
                 <CalendarDays className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">86</div>
-                <p className="text-xs text-muted-foreground">12 upcoming check-ins</p>
+                <div className="text-2xl font-bold">{bookingCount}</div>
+                <p className="text-xs text-muted-foreground">
+                  {bookingCount > 0 ? 'Total reservations' : 'No bookings yet'}
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -63,8 +83,10 @@ export default function DashboardPage() {
                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">7</div>
-                <p className="text-xs text-muted-foreground">2 unread</p>
+                <div className="text-2xl font-bold">{messageCount}</div>
+                <p className="text-xs text-muted-foreground">
+                  {messageCount > 0 ? 'Total messages' : 'No messages yet'}
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -94,5 +116,13 @@ export default function DashboardPage() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <AuthGuard>
+      <DashboardContent />
+    </AuthGuard>
   );
 }
