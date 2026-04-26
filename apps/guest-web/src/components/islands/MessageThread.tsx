@@ -1,13 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-
-interface ChatMessage {
-  id: string;
-  sender: 'guest' | 'host';
-  body: string;
-  createdAt: string;
-}
+import { api } from '~/lib/api';
+import type { ChatMessage } from '~/lib/api';
 
 interface MessageThreadProps {
   token: string;
@@ -20,20 +15,15 @@ export default function MessageThread({ token }: MessageThreadProps) {
   const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const apiUrl = (typeof window !== 'undefined' && (window as unknown as Record<string, string>).PUBLIC_API_URL) ?? 'https://api.alzahra.es';
-
   const fetchMessages = useCallback(async () => {
     try {
-      const res = await fetch(`${apiUrl}/v1/guest/messages`, {
-        headers: { 'x-guest-token': token },
-      });
-      if (!res.ok) throw new Error('Failed to load messages');
-      const data = (await res.json()) as { messages?: ChatMessage[]; data?: ChatMessage[] };
-      setMessages(data.messages ?? data.data ?? []);
+      const result = await api.getMessages(token);
+      if (result.error) throw new Error(result.error.message);
+      setMessages(result.data?.messages ?? []);
     } catch {
       // Silently fail on initial load; show empty state
     }
-  }, [apiUrl, token]);
+  }, [token]);
 
   useEffect(() => {
     fetchMessages();
@@ -63,21 +53,12 @@ export default function MessageThread({ token }: MessageThreadProps) {
       setInput('');
 
       try {
-        const res = await fetch(`${apiUrl}/v1/guest/messages`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-guest-token': token,
-          },
-          body: JSON.stringify({ body: trimmed }),
-        });
+        const result = await api.sendMessage(token, trimmed);
+        if (result.error) throw new Error(result.error.message);
 
-        if (!res.ok) throw new Error('Failed to send message');
-
-        const data = (await res.json()) as { message?: ChatMessage };
-        if (data.message) {
+        if (result.data?.message) {
           setMessages((prev) =>
-            prev.map((m) => (m.id === optimistic.id ? data.message! : m))
+            prev.map((m) => (m.id === optimistic.id ? result.data!.message : m))
           );
         }
       } catch (err) {
@@ -87,7 +68,7 @@ export default function MessageThread({ token }: MessageThreadProps) {
         setSending(false);
       }
     },
-    [input, sending, apiUrl, token]
+    [input, sending, token]
   );
 
   const formatTime = (iso: string) => {

@@ -1,6 +1,8 @@
 ---
 export const prerender = false;
 
+import { api } from '~/lib/api';
+
 const { token } = Astro.params;
 
 if (!token) {
@@ -8,24 +10,9 @@ if (!token) {
 }
 
 // Validate token server-side via API
-const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'https://api.alzahra.es';
-let valid = false;
+const result = await api.validateToken(token);
 
-try {
-  const res = await fetch(`${apiUrl}/v1/guest/validate`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-guest-token': token,
-    },
-    body: JSON.stringify({ token }),
-  });
-  valid = res.ok;
-} catch {
-  valid = false;
-}
-
-if (!valid) {
+if (!result.data?.valid || result.error) {
   return Astro.redirect(`/?error=invalid_token`);
 }
 

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { api } from '~/lib/api';
 
 interface UseTokenValidationResult {
   valid: boolean;
@@ -21,22 +22,10 @@ export function useTokenValidation(token: string | null): UseTokenValidationResu
     setError(null);
 
     try {
-      const apiUrl =
-        (typeof window !== 'undefined' && (window as unknown as Record<string, string>).PUBLIC_API_URL) ??
-        'https://api.alzahra.es';
-
-      const res = await fetch(`${apiUrl}/v1/guest/validate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-guest-token': token,
-        },
-        body: JSON.stringify({ token }),
-      });
-
-      setValid(res.ok);
-      if (!res.ok) {
-        setError('Invalid or expired token');
+      const result = await api.validateToken(token);
+      setValid(result.data?.valid ?? false);
+      if (!result.data?.valid || result.error) {
+        setError(result.error?.message ?? 'Invalid or expired token');
       }
     } catch (err) {
       setValid(false);

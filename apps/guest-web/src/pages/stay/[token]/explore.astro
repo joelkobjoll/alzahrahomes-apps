@@ -3,6 +3,7 @@ import MainLayout from '~/layouts/MainLayout.astro';
 import MapView from '~/components/islands/MapView';
 import CategoryFilter from '~/components/islands/CategoryFilter';
 import RecommendationCard from '~/components/islands/RecommendationCard';
+import { api } from '~/lib/api';
 import type { Property, Recommendation } from '@alzahra/types/domain';
 
 const { token } = Astro.params;
@@ -11,35 +12,30 @@ if (!token) {
   return Astro.redirect('/');
 }
 
-const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'https://api.alzahra.es';
-
 let property: Property | null = null;
 let recommendations: Recommendation[] = [];
 let error: string | null = null;
 
 try {
-  const [stayRes, recsRes] = await Promise.all([
-    fetch(`${apiUrl}/v1/guest/stay`, {
-      headers: { 'x-guest-token': token },
-    }),
-    fetch(`${apiUrl}/v1/guest/recommendations`, {
-      headers: { 'x-guest-token': token },
-    }),
+  const [stayResult, recsResult] = await Promise.all([
+    api.getStay(token),
+    api.getRecommendations(token),
   ]);
 
-  if (!stayRes.ok) {
-    if (stayRes.status === 401 || stayRes.status === 403) {
+  if (stayResult.error) {
+    if (stayResult.error.status === 401 || stayResult.error.status === 403) {
       return Astro.redirect('/?error=invalid_token');
     }
-    throw new Error(`Failed to fetch stay details: ${stayRes.status}`);
+    throw new Error(stayResult.error.message);
   }
 
-  const stayData = await stayRes.json();
-  property = stayData.property ?? null;
+  property = stayResult.data?.property ?? null;
 
-  if (recsRes.ok) {
-    const recsData = await recsRes.json();
-    recommendations = recsData.recommendations ?? recsData.data ?? [];
+  if (recsResult.error) {
+    // Don't block the page for recommendation errors
+    console.warn('Failed to fetch recommendations:', recsResult.error.message);
+  } else {
+    recommendations = recsResult.data?.recommendations ?? [];
   }
 } catch (err) {
   error = err instanceof Error ? err.message : 'Unknown error';
@@ -78,13 +74,21 @@ const pageTitle = property?.name ? `Explore — ${property.name}` : 'Explore';
             lat={parseFloat(property.latitude)}
             lng={parseFloat(property.longitude)}
             markers={recommendations
-              .filter((r: Recommendation) => r.filters?.lat && r.filters?.lng)
-              .map((r: Recommendation) => ({
-                id: r.id,
-                lat: Number(r.filters!.lat),
-                lng: Number(r.filters!.lng),
-                title: r.title,
-              }))}
+              .filter((r: Recommendation) => {
+                const lat = r.filters?.lat ?? (r.filters as Record<string, unknown> | null)?.latitude;
+                const lng = r.filters?.lng ?? (r.filters as Record<string, unknown> | null)?.longitude;
+                return typeof lat === 'number' || typeof lat === 'string' && typeof lng === 'number' || typeof lng === 'string';
+              })
+              .map((r: Recommendation) => {
+                const lat = Number(r.filters?.lat ?? (r.filters as Record<string, unknown> | null)?.latitude);
+                const lng = Number(r.filters?.lng ?? (r.filters as Record<string, unknown> | null)?.longitude);
+                return {
+                  id: r.id,
+                  lat,
+                  lng,
+                  title: r.title,
+                };
+              })}
           />
         </div>
       )}

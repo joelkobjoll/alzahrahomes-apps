@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { api } from '~/lib/api';
 import type { Property } from '@alzahra/types/domain';
 
 interface UsePropertyResult {
@@ -18,17 +19,11 @@ export function useProperty(token: string | null): UsePropertyResult {
     setError(null);
 
     try {
-      const apiUrl =
-        (typeof window !== 'undefined' && (window as unknown as Record<string, string>).PUBLIC_API_URL) ??
-        'https://api.alzahra.es';
-
-      const res = await fetch(`${apiUrl}/v1/guest/stay`, {
-        headers: { 'x-guest-token': token },
-      });
-
-      if (!res.ok) throw new Error(`Failed to fetch property: ${res.status}`);
-      const data = (await res.json()) as { property?: Property };
-      setProperty(data.property ?? null);
+      const result = await api.getStay(token);
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+      setProperty(result.data?.property ?? null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {

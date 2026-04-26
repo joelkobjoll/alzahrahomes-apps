@@ -2,45 +2,32 @@
 
 import { useCallback, useState } from 'react';
 
-interface WifiInfo {
-  ssid: string;
-  password: string;
-}
-
 interface WifiCardProps {
-  token: string;
+  ssid?: string | undefined;
+  password?: string | undefined;
 }
 
-export default function WifiCard({ token: _token }: WifiCardProps) {
-  const [loading] = useState(false);
-  const [wifi] = useState<WifiInfo | null>({
-    ssid: 'Alzahra-Guest',
-    password: 'Welcome2024!',
-  });
+const FALLBACK_WIFI = {
+  ssid: 'Alzahra-Guest',
+  password: 'Welcome2024!',
+};
+
+export default function WifiCard({ ssid, password }: WifiCardProps) {
   const [copied, setCopied] = useState(false);
 
+  const wifiSsid = ssid || FALLBACK_WIFI.ssid;
+  const wifiPassword = password || FALLBACK_WIFI.password;
+
   const copyPassword = useCallback(async () => {
-    if (!wifi?.password) return;
+    if (!wifiPassword) return;
     try {
-      await navigator.clipboard.writeText(wifi.password);
+      await navigator.clipboard.writeText(wifiPassword);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fallback: silently ignore
     }
-  }, [wifi]);
-
-  if (loading) {
-    return (
-      <div className="animate-pulse rounded-xl bg-stone-100 h-24" />
-    );
-  }
-
-  if (!wifi) {
-    return (
-      <p className="text-sm text-stone-500">WiFi information not available. Contact your host.</p>
-    );
-  }
+  }, [wifiPassword]);
 
   return (
     <div className="rounded-xl border border-border bg-surface p-4 space-y-3">
@@ -69,13 +56,13 @@ export default function WifiCard({ token: _token }: WifiCardProps) {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-xs text-stone-500">Network</span>
-          <span className="text-sm font-medium text-stone-900">{wifi.ssid}</span>
+          <span className="text-sm font-medium text-stone-900">{wifiSsid}</span>
         </div>
         <div className="flex items-center justify-between gap-3">
           <span className="text-xs text-stone-500 shrink-0">Password</span>
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-stone-900 font-mono truncate max-w-[140px]">
-              {wifi.password}
+              {wifiPassword}
             </span>
             <button
               type="button"

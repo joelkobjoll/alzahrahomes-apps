@@ -4,6 +4,7 @@ import PropertyHeader from '~/components/islands/PropertyHeader';
 import WifiCard from '~/components/islands/WifiCard';
 import MessageThread from '~/components/islands/MessageThread';
 import FeedbackForm from '~/components/islands/FeedbackForm';
+import { api } from '~/lib/api';
 import type { Property } from '@alzahra/types/domain';
 
 const { token } = Astro.params;
@@ -12,33 +13,30 @@ if (!token) {
   return Astro.redirect('/');
 }
 
-const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'https://api.alzahra.es';
-
 // Server-side data fetching for property details
 let property: Property | null = null;
 let error: string | null = null;
 
 try {
-  const res = await fetch(`${apiUrl}/v1/guest/stay`, {
-    headers: {
-      'x-guest-token': token,
-    },
-  });
+  const result = await api.getStay(token);
 
-  if (!res.ok) {
-    if (res.status === 401 || res.status === 403) {
+  if (result.error) {
+    if (result.error.status === 401 || result.error.status === 403) {
       return Astro.redirect('/?error=invalid_token');
     }
-    throw new Error(`Failed to fetch stay details: ${res.status}`);
+    throw new Error(result.error.message);
   }
 
-  const data = await res.json();
-  property = data.property ?? null;
+  property = result.data?.property ?? null;
 } catch (err) {
   error = err instanceof Error ? err.message : 'Unknown error';
 }
 
 const pageTitle = property?.name ? `${property.name} — Your Stay` : 'Your Stay';
+
+// Extract WiFi info from property metadata if available (future-proofing)
+const wifiSsid = (property as Record<string, unknown> | null)?.wifiSsid as string | null | undefined;
+const wifiPassword = (property as Record<string, unknown> | null)?.wifiPassword as string | null | undefined;
 ---
 
 <MainLayout title={pageTitle}>
@@ -100,7 +98,11 @@ const pageTitle = property?.name ? `${property.name} — Your Stay` : 'Your Stay
           )}
         </div>
 
-        <WifiCard client:load token={token} />
+        <WifiCard
+          client:load
+          ssid={wifiSsid ?? undefined}
+          password={wifiPassword ?? undefined}
+        />
       </section>
 
       <section class="px-5 py-5 border-t border-border">

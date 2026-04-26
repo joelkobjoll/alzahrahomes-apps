@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { api } from '~/lib/api';
 
 interface FeedbackFormProps {
   token: string;
@@ -27,10 +28,6 @@ export default function FeedbackForm({ token }: FeedbackFormProps) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const apiUrl =
-    (typeof window !== 'undefined' && (window as unknown as Record<string, string>).PUBLIC_API_URL) ??
-    'https://api.alzahra.es';
-
   const setSubRating = useCallback((key: string, value: number) => {
     setSubs((prev) => ({ ...prev, [key]: value }));
   }, []);
@@ -47,23 +44,16 @@ export default function FeedbackForm({ token }: FeedbackFormProps) {
       setError(null);
 
       try {
-        const res = await fetch(`${apiUrl}/v1/guest/feedback`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-guest-token': token,
-          },
-          body: JSON.stringify({
-            rating,
-            cleanliness: subs.cleanliness ?? null,
-            communication: subs.communication ?? null,
-            location: subs.location ?? null,
-            value: subs.value ?? null,
-            comment: comment.trim() || null,
-          }),
+        const result = await api.sendFeedback(token, {
+          rating,
+          cleanliness: subs.cleanliness ?? null,
+          communication: subs.communication ?? null,
+          location: subs.location ?? null,
+          value: subs.value ?? null,
+          comment: comment.trim() || null,
         });
 
-        if (!res.ok) throw new Error('Failed to submit feedback');
+        if (result.error) throw new Error(result.error.message);
         setSubmitted(true);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Submit failed');
@@ -71,7 +61,7 @@ export default function FeedbackForm({ token }: FeedbackFormProps) {
         setSubmitting(false);
       }
     },
-    [rating, subs, comment, apiUrl, token]
+    [rating, subs, comment, token]
   );
 
   if (submitted) {
