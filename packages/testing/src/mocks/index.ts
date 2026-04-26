@@ -1,7 +1,9 @@
-export {
+export type {
   ITokenRepository,
   IPropertyRepository,
   IUserRepository,
+} from './mock-repositories.js';
+export {
   InMemoryTokenRepository,
   InMemoryPropertyRepository,
   InMemoryUserRepository,

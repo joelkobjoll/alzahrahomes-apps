@@ -4,13 +4,13 @@ import type { PropertyListDTO } from '../dto/property-list.dto.js';
 export interface ListPropertiesInput {
   page: number;
   limit: number;
-  city?: string;
-  country?: string;
-  category?: string;
-  status?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  minGuests?: number;
+  city?: string | undefined;
+  country?: string | undefined;
+  category?: string | undefined;
+  status?: string | undefined;
+  minPrice?: number | undefined;
+  maxPrice?: number | undefined;
+  minGuests?: number | undefined;
 }
 
 export class ListPropertiesUseCase {

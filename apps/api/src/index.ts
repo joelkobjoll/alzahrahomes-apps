@@ -6,6 +6,7 @@ import { createPropertiesRoutes } from './features/properties/presentation/prope
 import { createTokensRoutes } from './features/tokens/presentation/tokens.routes.js';
 import { createRecommendationsRoutes } from './features/recommendations/presentation/recommendations.routes.js';
 import { createBookingsRoutes } from './features/bookings/presentation/bookings.routes.js';
+import { createGuestRoutes } from './features/guest/presentation/guest.routes.js';
 import { errorHandler } from './presentation/middleware/error-handler.js';
 
 const databaseUrl = process.env.DATABASE_URL;
@@ -30,6 +31,7 @@ app.route('/properties', createPropertiesRoutes(di));
 app.route('/tokens', createTokensRoutes(di));
 app.route('/recommendations', createRecommendationsRoutes());
 app.route('/bookings', createBookingsRoutes());
+app.route('/v1/guest', createGuestRoutes(di));
 
 app.get('/health', (c) => c.json({ status: 'ok' }));
 

@@ -16,7 +16,7 @@ export default function PropertyHeader({
   city,
   country,
   images,
-}: PropertyHeaderProps): JSX.Element {
+}: PropertyHeaderProps) {
   const [current, setCurrent] = useState(0);
   const safeImages = images.length > 0 ? images : ['/placeholder-property.jpg'];
 

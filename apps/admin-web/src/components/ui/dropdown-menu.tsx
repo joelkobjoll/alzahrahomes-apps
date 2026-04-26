@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { Slot } from '@radix-ui/react-slot';
 import { cn } from '@/lib/utils';
 
 const DropdownMenu = ({ children }: { children: React.ReactNode }) => {
@@ -17,28 +18,38 @@ function useDropdownMenu() {
   return React.useContext(DropdownMenuContext);
 }
 
-const DropdownMenuTrigger = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
-  ({ children, ...props }, ref) => {
+interface DropdownMenuTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  asChild?: boolean;
+}
+
+const DropdownMenuTrigger = React.forwardRef<HTMLButtonElement, DropdownMenuTriggerProps>(
+  ({ children, asChild, ...props }, ref) => {
     const { open, setOpen } = useDropdownMenu();
+    const Comp = asChild ? Slot : 'button';
     return (
-      <button ref={ref} onClick={() => setOpen(!open)} {...props}>
+      <Comp ref={ref} onClick={() => setOpen(!open)} {...props}>
         {children}
-      </button>
+      </Comp>
     );
   }
 );
 DropdownMenuTrigger.displayName = 'DropdownMenuTrigger';
 
-const DropdownMenuContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+interface DropdownMenuContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  align?: 'start' | 'end' | 'center';
+  forceMount?: boolean;
+}
+
+const DropdownMenuContent = React.forwardRef<HTMLDivElement, DropdownMenuContentProps>(
   ({ className, align = 'end', ...props }, ref) => {
     const { open } = useDropdownMenu();
-    if (!open) return null;
+    if (!open && !props.forceMount) return null;
     return (
       <div
         ref={ref}
         className={cn(
           'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
-          align === 'end' ? 'origin-top-right right-0' : 'origin-top-left left-0',
+          align === 'end' ? 'origin-top-right right-0' : align === 'start' ? 'origin-top-left left-0' : 'origin-top-center',
           className
         )}
         {...props}

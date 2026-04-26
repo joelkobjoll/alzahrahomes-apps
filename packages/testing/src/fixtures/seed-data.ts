@@ -35,9 +35,11 @@ export async function seedTestDatabase(db: TestDatabase['db']): Promise<SeedData
     TokenFactory.revoked({ userId: guest.id, type: 'api' }),
   ];
 
+  const property0 = properties[0]!;
+  const property1 = properties[1]!;
   const bookings = [
-    BookingFactory.create(properties[0].id, undefined, { guestId: guest.id, status: 'confirmed' }),
-    BookingFactory.create(properties[1].id, undefined, { guestId: guest.id, status: 'pending' }),
+    BookingFactory.create(property0.id, undefined, { guestId: guest.id, status: 'confirmed' }),
+    BookingFactory.create(property1.id, undefined, { guestId: guest.id, status: 'pending' }),
   ];
 
   const recommendations = [

@@ -39,7 +39,7 @@ export function createDatabaseClient(options: ClientOptions = {}) {
       : {}),
   });
 
-  const db = drizzle(client, { schema, logger: options.logQueries });
+  const db = drizzle(client, { schema, logger: options.logQueries ?? false });
 
   return { db, client };
 }

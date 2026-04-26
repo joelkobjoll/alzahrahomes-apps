@@ -7,7 +7,7 @@ export class DrizzleAuditLogRepository implements IAuditLogRepository {
   constructor(private readonly db: PostgresJsDatabase<typeof schema>) {}
 
   async create(input: CreateAuditLogInput): Promise<AuditLog> {
-    const [row] = await this.db
+    const result = await this.db
       .insert(schema.auditLogs)
       .values({
         userId: input.userId ?? null,
@@ -19,6 +19,7 @@ export class DrizzleAuditLogRepository implements IAuditLogRepository {
         userAgent: input.userAgent ?? null,
       })
       .returning();
+    const row = result[0]!;
     return this.toDomain(row);
   }
 
@@ -29,7 +30,7 @@ export class DrizzleAuditLogRepository implements IAuditLogRepository {
       action: row.action,
       entityType: row.entityType,
       entityId: row.entityId,
-      metadata: row.metadata,
+      metadata: row.metadata as Record<string, unknown> | null,
       ipAddress: row.ipAddress,
       userAgent: row.userAgent,
       createdAt: row.createdAt,

@@ -11,7 +11,7 @@ interface WifiCardProps {
   token: string;
 }
 
-export default function WifiCard({ token }: WifiCardProps): JSX.Element {
+export default function WifiCard({ token: _token }: WifiCardProps) {
   const [loading] = useState(false);
   const [wifi] = useState<WifiInfo | null>({
     ssid: 'Alzahra-Guest',

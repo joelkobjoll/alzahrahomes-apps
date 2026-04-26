@@ -4,6 +4,7 @@ export function errorHandler() {
   return async (c: Context, next: Next) => {
     try {
       await next();
+      return;
     } catch (err) {
       if (err instanceof Error && 'statusCode' in err && 'code' in err) {
         const domainErr = err as Error & { statusCode: number; code: string };

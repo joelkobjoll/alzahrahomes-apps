@@ -67,25 +67,25 @@ export class DrizzlePropertyRepository implements IPropertyRepository {
       orderBy: (t) => [sql`${t.createdAt} DESC`],
     });
 
-    const [{ value }] = await this.db
+    const countResult = await this.db
       .select({ value: count() })
       .from(schema.properties)
       .where(where ?? sql`TRUE`);
 
     return {
       items: rows.map((r) => this.toDomain(r)),
-      total: Number(value),
+      total: Number(countResult[0]?.value ?? 0),
     };
   }
 
   async create(input: CreatePropertyInput): Promise<Property> {
-    const [row] = await this.db
+    const result = await this.db
       .insert(schema.properties)
       .values({
         name: input.name,
         slug: input.slug,
         description: input.description ?? null,
-        category: input.category,
+        category: input.category as schema.PropertyCategory,
         address: input.address ?? null,
         city: input.city ?? null,
         country: input.country ?? null,
@@ -93,35 +93,40 @@ export class DrizzlePropertyRepository implements IPropertyRepository {
         latitude: input.latitude != null ? String(input.latitude) : null,
         longitude: input.longitude != null ? String(input.longitude) : null,
         bedrooms: input.bedrooms ?? null,
-        bathrooms: input.bathrooms ?? null,
+        bathrooms: input.bathrooms != null ? String(input.bathrooms) : null,
         maxGuests: input.maxGuests ?? null,
-        pricePerNight: input.pricePerNight ?? null,
+        pricePerNight: input.pricePerNight != null ? String(input.pricePerNight) : null,
         currency: input.currency ?? 'EUR',
         amenities: input.amenities ?? null,
         images: input.images ?? null,
         ownerId: input.ownerId ?? null,
       })
       .returning();
-    return this.toDomain(row);
+    return this.toDomain(result[0]!);
   }
 
   async update(id: string, input: UpdatePropertyInput): Promise<Property | null> {
-    const [row] = await this.db
+    const result = await this.db
       .update(schema.properties)
       .set({
         ...input,
+        latitude: input.latitude != null ? String(input.latitude) : input.latitude,
+        longitude: input.longitude != null ? String(input.longitude) : input.longitude,
+        bathrooms: input.bathrooms != null ? String(input.bathrooms) : input.bathrooms,
+        pricePerNight: input.pricePerNight != null ? String(input.pricePerNight) : input.pricePerNight,
         updatedAt: new Date(),
       })
       .where(eq(schema.properties.id, id))
       .returning();
-    return row ? this.toDomain(row) : null;
+    return result[0] ? this.toDomain(result[0]) : null;
   }
 
   async delete(id: string): Promise<boolean> {
     const result = await this.db
       .delete(schema.properties)
-      .where(eq(schema.properties.id, id));
-    return result.rowCount > 0;
+      .where(eq(schema.properties.id, id))
+      .returning();
+    return result.length > 0;
   }
 
   private toDomain(row: typeof schema.properties.$inferSelect): Property {

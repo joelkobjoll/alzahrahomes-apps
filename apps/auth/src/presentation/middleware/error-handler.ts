@@ -5,6 +5,7 @@ export function errorHandler() {
   return async (c: Context, next: Next) => {
     try {
       await next();
+      return;
     } catch (err) {
       if (err instanceof DomainError) {
         c.status(err.statusCode as 200);

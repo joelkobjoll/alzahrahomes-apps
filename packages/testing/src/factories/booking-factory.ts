@@ -32,7 +32,7 @@ export class BookingFactory {
       totalPrice: faker.commerce.price({ min: 100, max: 5000, dec: 2 }),
       currency: 'EUR',
       guestCount: faker.number.int({ min: 1, max: 8 }),
-      specialRequests: faker.helpers.maybe(() => faker.lorem.sentence()),
+      specialRequests: faker.helpers.maybe(() => faker.lorem.sentence()) ?? null,
       metadata: null,
       createdAt: now,
       updatedAt: now,

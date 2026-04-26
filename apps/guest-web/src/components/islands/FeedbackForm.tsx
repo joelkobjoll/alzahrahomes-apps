@@ -18,7 +18,7 @@ const subRatings: SubRating[] = [
   { label: 'Value', key: 'value' },
 ];
 
-export default function FeedbackForm({ token }: FeedbackFormProps): JSX.Element {
+export default function FeedbackForm({ token }: FeedbackFormProps) {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [subs, setSubs] = useState<Record<string, number>>({});

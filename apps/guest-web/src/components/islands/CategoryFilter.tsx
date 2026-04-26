@@ -17,7 +17,7 @@ interface CategoryFilterProps {
   onChange?: (category: string) => void;
 }
 
-export default function CategoryFilter({ onChange }: CategoryFilterProps): JSX.Element {
+export default function CategoryFilter({ onChange }: CategoryFilterProps) {
   const [active, setActive] = useState('all');
 
   const select = useCallback(

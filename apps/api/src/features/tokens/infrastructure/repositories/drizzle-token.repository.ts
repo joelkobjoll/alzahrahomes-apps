@@ -29,7 +29,7 @@ export class DrizzleTokenRepository implements ITokenRepository {
   }
 
   async create(input: CreateTokenInput): Promise<Token> {
-    const [row] = await this.db
+    const result = await this.db
       .insert(schema.tokens)
       .values({
         userId: input.userId,
@@ -39,7 +39,7 @@ export class DrizzleTokenRepository implements ITokenRepository {
         metadata: input.metadata ?? null,
       })
       .returning();
-    return this.toDomain(row);
+    return this.toDomain(result[0]!);
   }
 
   async updateLastUsedAt(id: string, date: Date): Promise<void> {
@@ -50,28 +50,29 @@ export class DrizzleTokenRepository implements ITokenRepository {
   }
 
   async revoke(id: string): Promise<Token | null> {
-    const [row] = await this.db
+    const result = await this.db
       .update(schema.tokens)
       .set({ revokedAt: new Date() })
       .where(eq(schema.tokens.id, id))
       .returning();
-    return row ? this.toDomain(row) : null;
+    return result[0] ? this.toDomain(result[0]) : null;
   }
 
   async extend(id: string, newExpiresAt: Date): Promise<Token | null> {
-    const [row] = await this.db
+    const result = await this.db
       .update(schema.tokens)
       .set({ expiresAt: newExpiresAt })
       .where(eq(schema.tokens.id, id))
       .returning();
-    return row ? this.toDomain(row) : null;
+    return result[0] ? this.toDomain(result[0]) : null;
   }
 
   async delete(id: string): Promise<boolean> {
     const result = await this.db
       .delete(schema.tokens)
-      .where(eq(schema.tokens.id, id));
-    return result.rowCount > 0;
+      .where(eq(schema.tokens.id, id))
+      .returning();
+    return result.length > 0;
   }
 
   private toDomain(row: typeof schema.tokens.$inferSelect): Token {
@@ -84,7 +85,7 @@ export class DrizzleTokenRepository implements ITokenRepository {
       lastUsedAt: row.lastUsedAt,
       createdAt: row.createdAt,
       revokedAt: row.revokedAt,
-      metadata: row.metadata,
+      metadata: row.metadata as Record<string, unknown> | null,
     };
   }
 }

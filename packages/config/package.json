@@ -9,6 +9,10 @@
       "import": "./tsconfig.base.json",
       "require": "./tsconfig.base.json"
     },
+    "./tsconfig.base.json": {
+      "import": "./tsconfig.base.json",
+      "require": "./tsconfig.base.json"
+    },
     "./eslint": {
       "import": "./eslint.config.js",
       "require": "./eslint.config.js"

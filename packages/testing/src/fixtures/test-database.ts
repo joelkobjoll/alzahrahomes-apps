@@ -1,15 +1,15 @@
-import { PostgreSqlContainer, type StartedPostgreSqlContainer } from 'testcontainers';
+import { GenericContainer, type StartedTestContainer, Wait } from 'testcontainers';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from '@alzahra/db/schema';
 
 export interface TestDatabase {
-  container: StartedPostgreSqlContainer;
+  container: StartedTestContainer;
   client: postgres.Sql;
   db: ReturnType<typeof drizzle<typeof schema>>;
 }
 
-let sharedContainer: StartedPostgreSqlContainer | undefined;
+let sharedContainer: StartedTestContainer | undefined;
 let sharedClient: postgres.Sql | undefined;
 
 /**
@@ -18,14 +18,18 @@ let sharedClient: postgres.Sql | undefined;
  */
 export async function startTestDatabase(options?: { fresh?: boolean }): Promise<TestDatabase> {
   if (!sharedContainer || options?.fresh) {
-    const container = await new PostgreSqlContainer('postgres:16-alpine')
-      .withDatabase('test')
-      .withUsername('test')
-      .withPassword('test')
+    const container = await new GenericContainer('postgres:16-alpine')
+      .withEnvironment({
+        POSTGRES_DB: 'test',
+        POSTGRES_USER: 'test',
+        POSTGRES_PASSWORD: 'test',
+      })
+      .withExposedPorts(5432)
+      .withWaitStrategy(Wait.forLogMessage('database system is ready to accept connections'))
       .start();
 
     sharedContainer = container;
-    const connectionString = container.getConnectionUri();
+    const connectionString = `postgresql://test:test@${container.getHost()}:${container.getMappedPort(5432)}/test`;
     sharedClient = postgres(connectionString, { max: 10, prepare: false });
   }
 

@@ -8,6 +8,9 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
+    "test:e2e": "pnpm --filter @alzahra/e2e test",
+    "test:e2e:ui": "pnpm --filter @alzahra/e2e test:ui",
+    "test:e2e:headed": "pnpm --filter @alzahra/e2e test:headed",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "clean": "turbo run clean && rm -rf node_modules"

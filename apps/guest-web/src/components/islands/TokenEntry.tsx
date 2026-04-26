@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 
-export default function TokenEntry(): JSX.Element {
+export default function TokenEntry() {
   const [token, setToken] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);

@@ -6,6 +6,7 @@ import {
   impersonateSchema,
   getCookieConfig,
 } from '@alzahra/auth-config';
+import type { LoginDTO, RegisterDTO, ImpersonateDTO } from '@alzahra/auth-config';
 import type { DIContainer } from '../infrastructure/di.js';
 import { validateRequest } from './middleware/validate-request.js';
 import { UnauthorizedError } from '../domain/errors/unauthorized-error.js';
@@ -15,7 +16,7 @@ export function createAuthRoutes(di: DIContainer) {
   const cookieConfig = getCookieConfig(process.env.NODE_ENV === 'development');
 
   app.post('/login', validateRequest(loginSchema), async (c) => {
-    const body = c.get('validatedBody');
+    const body = c.get('validatedBody') as LoginDTO;
     const result = await di.loginUserUseCase.execute({
       email: body.email,
       password: body.password,
@@ -44,7 +45,7 @@ export function createAuthRoutes(di: DIContainer) {
   });
 
   app.post('/register', validateRequest(registerSchema), async (c) => {
-    const body = c.get('validatedBody');
+    const body = c.get('validatedBody') as RegisterDTO;
     const result = await di.createUserUseCase.execute({
       email: body.email,
       password: body.password,
@@ -70,7 +71,7 @@ export function createAuthRoutes(di: DIContainer) {
   });
 
   app.post('/impersonate', validateRequest(impersonateSchema), async (c) => {
-    const body = c.get('validatedBody');
+    const body = c.get('validatedBody') as ImpersonateDTO;
     const actorToken = getCookie(c, cookieConfig.name);
     if (!actorToken) {
       throw new UnauthorizedError('No session cookie');

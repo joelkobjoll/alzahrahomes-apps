@@ -29,7 +29,7 @@ export default function RecommendationCard({
   description,
   type,
   score,
-}: RecommendationCardProps): JSX.Element {
+}: RecommendationCardProps) {
   return (
     <div className="flex gap-3 p-3 rounded-xl border border-border bg-surface hover:shadow-sm transition-shadow">
       <div className="w-16 h-16 rounded-lg bg-stone-200 shrink-0 flex items-center justify-center overflow-hidden">

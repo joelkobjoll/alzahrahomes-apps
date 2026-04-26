@@ -16,7 +16,7 @@ interface MapViewProps {
   markers?: MapMarker[];
 }
 
-export default function MapView({ lat, lng, markers = [] }: MapViewProps): JSX.Element {
+export default function MapView({ lat, lng, markers = [] }: MapViewProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<Marker[]>([]);

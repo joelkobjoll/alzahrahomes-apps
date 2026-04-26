@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import type { HonoRequest } from 'hono';
 
 /**
  * Create a test Hono app with the given routes mounted.

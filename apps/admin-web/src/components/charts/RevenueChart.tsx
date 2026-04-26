@@ -31,7 +31,7 @@ export function RevenueChart() {
         <XAxis dataKey="month" />
         <YAxis tickFormatter={(v) => `€${v}`} />
         <Tooltip
-          formatter={(value: number) => [`€${value.toLocaleString()}`, 'Revenue']}
+          formatter={(value) => [`€${typeof value === 'number' ? value.toLocaleString() : '0'}`, 'Revenue']}
           contentStyle={{ borderRadius: '0.5rem' }}
         />
         <Area

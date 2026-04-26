@@ -22,8 +22,6 @@ export class UpdatePropertyUseCase {
 
     const updated = await this.propertyRepo.update(id, {
       ...dto,
-      bathrooms: dto.bathrooms != null ? String(dto.bathrooms) : dto.bathrooms,
-      pricePerNight: dto.pricePerNight != null ? String(dto.pricePerNight) : dto.pricePerNight,
     });
 
     if (!updated) {

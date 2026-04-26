@@ -3,6 +3,7 @@ import {
   uuid,
   varchar,
   text,
+  integer,
   decimal,
   timestamp,
   jsonb,

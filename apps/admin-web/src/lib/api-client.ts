@@ -6,6 +6,11 @@ function buildUrl(path: string): string {
   return `${base}${p}`;
 }
 
+function serializeBody(body: unknown): string | null {
+  if (body == null) return null;
+  return JSON.stringify(body) as string;
+}
+
 export const apiClient = {
   get(path: string, init?: RequestInit) {
     return fetch(buildUrl(path), {
@@ -28,7 +33,7 @@ export const apiClient = {
         'Content-Type': 'application/json',
         ...init?.headers,
       },
-      body: body ? JSON.stringify(body) : undefined,
+      body: serializeBody(body),
     });
   },
 
@@ -41,7 +46,7 @@ export const apiClient = {
         'Content-Type': 'application/json',
         ...init?.headers,
       },
-      body: body ? JSON.stringify(body) : undefined,
+      body: serializeBody(body),
     });
   },
 
@@ -54,7 +59,7 @@ export const apiClient = {
         'Content-Type': 'application/json',
         ...init?.headers,
       },
-      body: body ? JSON.stringify(body) : undefined,
+      body: serializeBody(body),
     });
   },
 

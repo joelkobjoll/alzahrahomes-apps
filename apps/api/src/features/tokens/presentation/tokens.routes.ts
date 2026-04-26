@@ -19,7 +19,7 @@ const generateSchema = z.object({
   userId: z.string().uuid(),
   type: z.enum(['api', 'refresh', 'reset_password', 'verify_email']),
   expiresAt: z.string().datetime().optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 const extendSchema = z.object({

@@ -2,6 +2,7 @@
   "extends": "@alzahra/config/tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "~/*": ["./src/*"]
     },

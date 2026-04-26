@@ -140,6 +140,6 @@ export const externalServiceHandlers = [
 export const mswHandlers = [...googlePlacesHandlers, ...externalServiceHandlers];
 
 // Passthrough for non-mocked requests
-export const passthroughHandler = http.all('*', ({ request }) => {
+export const passthroughHandler = http.all('*', () => {
   return passthrough();
 });

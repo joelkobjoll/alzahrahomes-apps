@@ -10,7 +10,6 @@ import type {
   PropertyCategory,
   PropertyStatus,
   RecommendationType,
-  TokenType,
   UserRole,
 } from './domain.js';
 

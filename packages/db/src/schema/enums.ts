@@ -1,8 +1,10 @@
 import { pgEnum } from 'drizzle-orm/pg-core';
 
 export const userRoleEnum = pgEnum('user_role', ['guest', 'admin', 'owner', 'staff']);
+export type UserRole = typeof userRoleEnum.enumValues[number];
 
 export const propertyStatusEnum = pgEnum('property_status', ['draft', 'published', 'archived']);
+export type PropertyStatus = typeof propertyStatusEnum.enumValues[number];
 
 export const propertyCategoryEnum = pgEnum('property_category', [
   'apartment',
@@ -15,6 +17,7 @@ export const propertyCategoryEnum = pgEnum('property_category', [
   'cottage',
   'other',
 ]);
+export type PropertyCategory = typeof propertyCategoryEnum.enumValues[number];
 
 export const tokenTypeEnum = pgEnum('token_type', [
   'api',
@@ -22,6 +25,7 @@ export const tokenTypeEnum = pgEnum('token_type', [
   'reset_password',
   'verify_email',
 ]);
+export type TokenType = typeof tokenTypeEnum.enumValues[number];
 
 export const bookingStatusEnum = pgEnum('booking_status', [
   'pending',
@@ -30,6 +34,7 @@ export const bookingStatusEnum = pgEnum('booking_status', [
   'completed',
   'no_show',
 ]);
+export type BookingStatus = typeof bookingStatusEnum.enumValues[number];
 
 export const messageTypeEnum = pgEnum('message_type', [
   'inquiry',
@@ -61,3 +66,4 @@ export const recommendationTypeEnum = pgEnum('recommendation_type', [
   'trending',
   'seasonal',
 ]);
+export type RecommendationType = typeof recommendationTypeEnum.enumValues[number];

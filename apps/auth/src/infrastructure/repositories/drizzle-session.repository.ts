@@ -22,7 +22,7 @@ export class DrizzleSessionRepository implements ISessionRepository {
   }
 
   async create(input: CreateSessionInput): Promise<Session> {
-    const [row] = await this.db
+    const result = await this.db
       .insert(schema.sessions)
       .values({
         userId: input.userId,
@@ -32,28 +32,32 @@ export class DrizzleSessionRepository implements ISessionRepository {
         userAgent: input.userAgent ?? null,
       })
       .returning();
+    const row = result[0]!;
     return this.toDomain(row);
   }
 
   async deleteByToken(token: string): Promise<boolean> {
     const result = await this.db
       .delete(schema.sessions)
-      .where(eq(schema.sessions.token, token));
-    return result.rowCount > 0;
+      .where(eq(schema.sessions.token, token))
+      .returning();
+    return result.length > 0;
   }
 
   async deleteByUserId(userId: string): Promise<boolean> {
     const result = await this.db
       .delete(schema.sessions)
-      .where(eq(schema.sessions.userId, userId));
-    return result.rowCount > 0;
+      .where(eq(schema.sessions.userId, userId))
+      .returning();
+    return result.length > 0;
   }
 
   async deleteExpired(before: Date): Promise<number> {
     const result = await this.db
       .delete(schema.sessions)
-      .where(lt(schema.sessions.expiresAt, before));
-    return result.rowCount ?? 0;
+      .where(lt(schema.sessions.expiresAt, before))
+      .returning();
+    return result.length;
   }
 
   private toDomain(row: typeof schema.sessions.$inferSelect): Session {

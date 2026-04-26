@@ -25,7 +25,7 @@ export function OccupancyChart() {
         <XAxis dataKey="month" />
         <YAxis unit="%" domain={[0, 100]} />
         <Tooltip
-          formatter={(value: number) => [`${value}%`, 'Occupancy']}
+          formatter={(value) => [`${typeof value === 'number' ? value : 0}%`, 'Occupancy']}
           contentStyle={{ borderRadius: '0.5rem' }}
         />
         <Bar dataKey="occupancy" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />

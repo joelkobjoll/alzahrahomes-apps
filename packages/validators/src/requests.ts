@@ -247,7 +247,7 @@ export const createRecommendationRequestSchema = z.object({
   title: z.string().min(1).max(255),
   description: z.string().optional(),
   type: recommendationTypeSchema,
-  filters: z.record(z.unknown()).optional(),
+  filters: z.record(z.string(), z.unknown()).optional(),
   score: z.number().min(0).max(1).optional(),
   validFrom: z.string().datetime().optional(),
   validUntil: z.string().datetime().optional(),

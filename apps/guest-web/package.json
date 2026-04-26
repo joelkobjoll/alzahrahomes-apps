@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@alzahra/config": "workspace:*",
+    "@astrojs/check": "^0.9.8",
     "@astrojs/react": "^5.0.4",
     "@types/leaflet": "^1.9.21",
     "@types/react": "^19.2.14",

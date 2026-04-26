@@ -22,7 +22,7 @@ export class DrizzleUserRepository implements IUserRepository {
   }
 
   async create(input: CreateUserInput): Promise<User> {
-    const [row] = await this.db
+    const result = await this.db
       .insert(schema.users)
       .values({
         email: input.email,
@@ -30,21 +30,24 @@ export class DrizzleUserRepository implements IUserRepository {
         firstName: input.firstName,
         lastName: input.lastName,
         phone: input.phone ?? null,
-        role: input.role ?? 'guest',
+        role: (input.role ?? 'guest') as 'guest' | 'admin' | 'owner' | 'staff',
       })
       .returning();
+    const row = result[0]!;
     return this.toDomain(row);
   }
 
   async update(id: string, changes: Partial<Omit<User, 'id' | 'createdAt'>>): Promise<User | null> {
-    const [row] = await this.db
+    const result = await this.db
       .update(schema.users)
       .set({
         ...changes,
+        role: changes.role as 'guest' | 'admin' | 'owner' | 'staff' | undefined,
         updatedAt: new Date(),
       })
       .where(eq(schema.users.id, id))
       .returning();
+    const row = result[0];
     return row ? this.toDomain(row) : null;
   }
 

@@ -1,6 +1,12 @@
 import type { Context, Next } from 'hono';
 import { ZodError, type ZodSchema } from 'zod';
 
+declare module 'hono' {
+  interface ContextVariableMap {
+    validatedBody: unknown;
+  }
+}
+
 export function validateRequest(schema: ZodSchema) {
   return async (c: Context, next: Next) => {
     const body = await c.req.json().catch(() => ({}));
@@ -30,5 +36,6 @@ export function validateRequest(schema: ZodSchema) {
 
     c.set('validatedBody', result.data);
     await next();
+    return;
   };
 }

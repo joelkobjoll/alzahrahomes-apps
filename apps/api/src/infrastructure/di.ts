@@ -1,10 +1,9 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from '@alzahra/db/schema';
 import { DrizzlePropertyRepository } from '../features/properties/infrastructure/repositories/drizzle-property.repository.js';
 import { DrizzleTokenRepository } from '../features/tokens/infrastructure/repositories/drizzle-token.repository.js';
-import { DrizzleRecommendationRepository } from '../features/recommendations/infrastructure/repositories/drizzle-recommendation.repository.js';
-import { DrizzleBookingRepository } from '../features/bookings/infrastructure/repositories/drizzle-booking.repository.js';
 import { CreatePropertyUseCase } from '../features/properties/application/use-cases/create-property.use-case.js';
 import { GetPropertyByIdUseCase } from '../features/properties/application/use-cases/get-property-by-id.use-case.js';
 import { ListPropertiesUseCase } from '../features/properties/application/use-cases/list-properties.use-case.js';
@@ -16,6 +15,7 @@ import { RevokeTokenUseCase } from '../features/tokens/application/use-cases/rev
 import { ExtendTokenUseCase } from '../features/tokens/application/use-cases/extend-token.use-case.js';
 
 export interface DIContainer {
+  db: PostgresJsDatabase<typeof schema>;
   createPropertyUseCase: CreatePropertyUseCase;
   getPropertyByIdUseCase: GetPropertyByIdUseCase;
   listPropertiesUseCase: ListPropertiesUseCase;
@@ -54,6 +54,7 @@ export function createDIContainer(databaseUrl: string): DIContainer {
   const tokenGenerator = new RandomTokenGenerator();
 
   return {
+    db,
     createPropertyUseCase: new CreatePropertyUseCase(propertyRepo),
     getPropertyByIdUseCase: new GetPropertyByIdUseCase(propertyRepo),
     listPropertiesUseCase: new ListPropertiesUseCase(propertyRepo),

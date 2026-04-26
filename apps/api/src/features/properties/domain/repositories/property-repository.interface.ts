@@ -6,13 +6,13 @@ export interface IPropertyRepository {
   findMany(options: {
     limit: number;
     offset: number;
-    city?: string;
-    country?: string;
-    category?: string;
-    status?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    minGuests?: number;
+    city?: string | undefined;
+    country?: string | undefined;
+    category?: string | undefined;
+    status?: string | undefined;
+    minPrice?: number | undefined;
+    maxPrice?: number | undefined;
+    minGuests?: number | undefined;
   }): Promise<{ items: Property[]; total: number }>;
   create(input: CreatePropertyInput): Promise<Property>;
   update(id: string, input: UpdatePropertyInput): Promise<Property | null>;

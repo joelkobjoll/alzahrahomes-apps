@@ -131,7 +131,7 @@ export const tokenSchema = z.object({
   lastUsedAt: z.coerce.date().nullable(),
   createdAt: z.coerce.date(),
   revokedAt: z.coerce.date().nullable(),
-  metadata: z.record(z.unknown()).nullable(),
+  metadata: z.record(z.string(), z.unknown()).nullable(),
 });
 
 export const bookingSchema = z.object({
@@ -145,7 +145,7 @@ export const bookingSchema = z.object({
   currency: z.string().length(3).default('EUR'),
   guestCount: z.number().int().min(1).default(1),
   specialRequests: z.string().nullable(),
-  metadata: z.record(z.unknown()).nullable(),
+  metadata: z.record(z.string(), z.unknown()).nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
   cancelledAt: z.coerce.date().nullable(),
@@ -177,7 +177,7 @@ export const eventSchema = z.object({
   allDay: z.boolean().default(false),
   assigneeId: uuidSchema.nullable(),
   status: eventStatusSchema,
-  metadata: z.record(z.unknown()).nullable(),
+  metadata: z.record(z.string(), z.unknown()).nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });
@@ -204,7 +204,7 @@ export const recommendationSchema = z.object({
   title: z.string().max(255),
   description: z.string().nullable(),
   type: recommendationTypeSchema,
-  filters: z.record(z.unknown()).nullable(),
+  filters: z.record(z.string(), z.unknown()).nullable(),
   score: z.string().nullable(),
   validFrom: z.coerce.date().nullable(),
   validUntil: z.coerce.date().nullable(),
@@ -225,7 +225,7 @@ export const auditLogSchema = z.object({
   action: z.string().max(100),
   entityType: z.string().max(100),
   entityId: z.string().max(100).nullable(),
-  metadata: z.record(z.unknown()).nullable(),
+  metadata: z.record(z.string(), z.unknown()).nullable(),
   ipAddress: z.string().max(45).nullable(),
   userAgent: z.string().nullable(),
   createdAt: z.coerce.date(),
