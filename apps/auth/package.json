@@ -17,17 +17,17 @@
     "@alzahra/auth-client": "workspace:*",
     "@alzahra/auth-config": "workspace:*",
     "@alzahra/db": "workspace:*",
-    "bcryptjs": "^2.4.3",
-    "drizzle-orm": "^0.30.10",
-    "hono": "^4.4.0",
-    "postgres": "^3.4.4",
-    "zod": "^3.23.8"
+    "bcryptjs": "^3.0.3",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.15",
+    "postgres": "^3.4.9",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@alzahra/config": "workspace:*",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20.12.12",
-    "tsx": "^4.11.0",
-    "typescript": "^5.4.5"
+    "@types/bcryptjs": "^3.0.0",
+    "@types/node": "^25.6.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }
