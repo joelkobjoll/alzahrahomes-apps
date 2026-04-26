@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { registerStaff, generateToken, createProperty, sendGuestMessage } from '../../fixtures/api-helpers.js';
+import { registerStaff, generateToken, createProperty, createBooking, sendGuestMessage } from '../../fixtures/api-helpers.js';
 import { createStaffUser, createPropertyInput } from '../../fixtures/test-data.js';
 import { GuestPage } from '../../pages/guest.page.js';
 
@@ -8,7 +8,15 @@ test.describe('Guest Messaging', () => {
     // Arrange
     const staff = createStaffUser();
     const { user } = await registerStaff(request, staff);
+    const property = await createProperty(request, createPropertyInput());
     const { plainToken } = await generateToken(request, { userId: user.id, type: 'api' });
+    await createBooking(request, {
+      propertyId: property.id,
+      guestId: user.id,
+      checkIn: new Date(Date.now() - 86400000).toISOString(),
+      checkOut: new Date(Date.now() + 86400000).toISOString(),
+      status: 'confirmed',
+    });
 
     // Act
     const message = await sendGuestMessage(request, plainToken, 'Hello host!');
@@ -21,8 +29,15 @@ test.describe('Guest Messaging', () => {
     // Arrange
     const staff = createStaffUser();
     const { user } = await registerStaff(request, staff);
-    await createProperty(request, createPropertyInput());
+    const property = await createProperty(request, createPropertyInput());
     const { plainToken } = await generateToken(request, { userId: user.id, type: 'api' });
+    await createBooking(request, {
+      propertyId: property.id,
+      guestId: user.id,
+      checkIn: new Date(Date.now() - 86400000).toISOString(),
+      checkOut: new Date(Date.now() + 86400000).toISOString(),
+      status: 'confirmed',
+    });
 
     const guestPage = new GuestPage(page);
 

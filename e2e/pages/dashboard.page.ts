@@ -36,4 +36,17 @@ export class DashboardPage {
     await this.propertiesCard.waitFor({ state: 'visible' });
     await this.tokensCard.waitFor({ state: 'visible' });
   }
+
+  async getStats(): Promise<{ properties: number; tokens: number; bookings: number; messages: number }> {
+    const propsText = await this.propertiesCard.locator('..').locator('.text-2xl').textContent().catch(() => '0');
+    const tokensText = await this.tokensCard.locator('..').locator('.text-2xl').textContent().catch(() => '0');
+    const bookingsText = await this.bookingsCard.locator('..').locator('.text-2xl').textContent().catch(() => '0');
+    const messagesText = await this.messagesCard.locator('..').locator('.text-2xl').textContent().catch(() => '0');
+    return {
+      properties: Number(propsText ?? '0'),
+      tokens: Number(tokensText ?? '0'),
+      bookings: Number(bookingsText ?? '0'),
+      messages: Number(messagesText ?? '0'),
+    };
+  }
 }

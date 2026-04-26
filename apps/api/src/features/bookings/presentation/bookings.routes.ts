@@ -18,6 +18,24 @@ const querySchema = z.object({
   toDate: z.string().datetime().optional(),
 });
 
+const createSchema = z.object({
+  propertyId: z.string().uuid(),
+  guestId: z.string().uuid(),
+  checkIn: z.string().datetime(),
+  checkOut: z.string().datetime(),
+  status: z.enum(['pending', 'confirmed', 'cancelled', 'completed', 'no_show']).optional(),
+  guestCount: z.number().int().min(1).optional(),
+  specialRequests: z.string().optional(),
+});
+
+const updateSchema = z.object({
+  status: z.enum(['pending', 'confirmed', 'cancelled', 'completed', 'no_show']).optional(),
+  checkIn: z.string().datetime().optional(),
+  checkOut: z.string().datetime().optional(),
+  guestCount: z.number().int().min(1).optional(),
+  specialRequests: z.string().optional(),
+});
+
 export function createBookingsRoutes(di: BookingsDI) {
   const app = new Hono();
 
@@ -59,6 +77,39 @@ export function createBookingsRoutes(di: BookingsDI) {
     const total = Number(countResult[0]?.value ?? 0);
 
     return c.json({ data: { items, total, page: query.page, limit: query.limit }, error: null });
+  });
+
+  app.post('/', async (c) => {
+    const body = createSchema.parse(await c.req.json());
+    const [booking] = await di.db.insert(schema.bookings)
+      .values({
+        propertyId: body.propertyId,
+        guestId: body.guestId,
+        checkIn: new Date(body.checkIn),
+        checkOut: new Date(body.checkOut),
+        status: body.status ?? 'pending',
+        guestCount: body.guestCount ?? 1,
+        specialRequests: body.specialRequests ?? null,
+      })
+      .returning();
+    c.status(201);
+    return c.json({ data: booking, error: null });
+  });
+
+  app.patch('/:id', async (c) => {
+    const id = c.req.param('id');
+    const body = updateSchema.parse(await c.req.json());
+    const [booking] = await di.db.update(schema.bookings)
+      .set({
+        ...(body.status ? { status: body.status } : {}),
+        ...(body.checkIn ? { checkIn: new Date(body.checkIn) } : {}),
+        ...(body.checkOut ? { checkOut: new Date(body.checkOut) } : {}),
+        ...(body.guestCount ? { guestCount: body.guestCount } : {}),
+        ...(body.specialRequests !== undefined ? { specialRequests: body.specialRequests } : {}),
+      })
+      .where(eq(schema.bookings.id, id))
+      .returning();
+    return c.json({ data: booking, error: null });
   });
 
   app.get('/:id', async (c) => {

@@ -33,7 +33,7 @@ test.describe('Staff Login', () => {
     await loginPage.login('invalid@alzahra.test', 'wrongpassword');
 
     // Assert
-    await loginPage.expectLoginError();
+    await loginPage.expectError();
     await expect(page).toHaveURL('/login');
   });
 
@@ -43,10 +43,20 @@ test.describe('Staff Login', () => {
     const user = createStaffUser();
     await registerStaff(request, user);
     const { cookies } = await loginStaff(request, user);
-    const loginPage = new LoginPage(page);
 
-    // Act
+    // Act - set cookie on page context to be authenticated
+    await page.context().addCookies(
+      cookies.split(',').flatMap((c) => {
+        const [name, ...rest] = c.trim().split('=');
+        const value = rest.join('=').split(';')[0];
+        if (!name || !value) return [];
+        return [{ name: name.trim(), value, domain: 'localhost', path: '/' }];
+      }),
+    );
     await page.goto('/dashboard');
+    await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible();
+
+    // Logout via API and reload
     await logoutStaff(request, cookies);
     await page.reload();
 

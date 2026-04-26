@@ -119,12 +119,29 @@ export async function revokeToken(api: APIRequestContext, tokenId: string): Prom
   return json.data;
 }
 
-export async function createBooking(api: APIRequestContext, data: Record<string, unknown>): Promise<Booking> {
-  // Note: bookings endpoint is not fully implemented in API, using direct DB or skipping
+export async function createBooking(api: APIRequestContext, data: {
+  propertyId: string;
+  guestId: string;
+  checkIn: string;
+  checkOut: string;
+  status?: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show';
+  guestCount?: number;
+  specialRequests?: string;
+}): Promise<Booking> {
   const res = await api.post(`${API_URL}/bookings`, { data });
   if (!res.ok()) {
     const text = await res.text();
     throw new Error(`Failed to create booking: ${res.status()} ${text}`);
+  }
+  const json = (await res.json()) as { data: Booking };
+  return json.data;
+}
+
+export async function updateBooking(api: APIRequestContext, id: string, data: Record<string, unknown>): Promise<Booking> {
+  const res = await api.patch(`${API_URL}/bookings/${id}`, { data });
+  if (!res.ok()) {
+    const text = await res.text();
+    throw new Error(`Failed to update booking: ${res.status()} ${text}`);
   }
   const json = (await res.json()) as { data: Booking };
   return json.data;

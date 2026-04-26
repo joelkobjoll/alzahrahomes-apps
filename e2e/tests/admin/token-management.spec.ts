@@ -28,7 +28,7 @@ test.describe('Admin Token Management', () => {
     // Arrange
     await setupAdminWebRouting(page);
     const user = createStaffUser();
-    await registerStaff(request, user);
+    const { user: registeredUser } = await registerStaff(request, user);
     const loginPage = new LoginPage(page);
     const tokenPage = new TokenPage(page);
 
@@ -36,7 +36,7 @@ test.describe('Admin Token Management', () => {
     await loginPage.goto();
     await loginPage.login(user.email, user.password);
     await tokenPage.goto();
-    const tokenValue = await tokenPage.generateToken();
+    const tokenValue = await tokenPage.generateToken(registeredUser.id, 'api');
 
     // Assert
     expect(tokenValue).toBeTruthy();

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { GuestPage } from '../../pages/guest.page.js';
-import { registerStaff, generateToken, createProperty } from '../../fixtures/api-helpers.js';
+import { registerStaff, generateToken, createProperty, createBooking } from '../../fixtures/api-helpers.js';
 import { createStaffUser, createPropertyInput } from '../../fixtures/test-data.js';
 import { mockGooglePlaces } from '../../fixtures/api-helpers.js';
 
@@ -19,6 +19,13 @@ test.describe('Explore Recommendations', () => {
       userId: user.id,
       type: 'api',
       metadata: { propertyId: property.id },
+    });
+    await createBooking(request, {
+      propertyId: property.id,
+      guestId: user.id,
+      checkIn: new Date(Date.now() - 86400000).toISOString(),
+      checkOut: new Date(Date.now() + 86400000).toISOString(),
+      status: 'confirmed',
     });
 
     const guestPage = new GuestPage(page);
@@ -42,10 +49,17 @@ test.describe('Explore Recommendations', () => {
       type: 'api',
       metadata: { propertyId: property.id },
     });
+    await createBooking(request, {
+      propertyId: property.id,
+      guestId: user.id,
+      checkIn: new Date(Date.now() - 86400000).toISOString(),
+      checkOut: new Date(Date.now() + 86400000).toISOString(),
+      status: 'confirmed',
+    });
 
     // Act
     await page.goto(`/stay/${plainToken}/explore`);
-    const foodFilter = page.getByRole('button', { name: /food \& drink/i });
+    const foodFilter = page.getByRole('button', { name: /food/i });
     await foodFilter.click();
 
     // Assert

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { GuestPage } from '../../pages/guest.page.js';
-import { registerStaff, generateToken, createProperty } from '../../fixtures/api-helpers.js';
+import { registerStaff, generateToken, createProperty, createBooking } from '../../fixtures/api-helpers.js';
 import { createStaffUser, createPropertyInput } from '../../fixtures/test-data.js';
 import { mockGooglePlaces } from '../../fixtures/api-helpers.js';
 
@@ -16,6 +16,14 @@ test.describe('Guest Journey', () => {
       type: 'api',
       metadata: { propertyId: property.id },
     });
+    // Create a confirmed booking so /v1/guest/stay returns the property
+    await createBooking(request, {
+      propertyId: property.id,
+      guestId: user.id,
+      checkIn: new Date(Date.now() - 86400000).toISOString(),
+      checkOut: new Date(Date.now() + 86400000).toISOString(),
+      status: 'confirmed',
+    });
 
     const guestPage = new GuestPage(page);
 
@@ -28,6 +36,7 @@ test.describe('Guest Journey', () => {
     await expect(page).toHaveURL(new RegExp(`/stay/${plainToken}/my-flat`));
     await expect(guestPage.wifiCard).toBeVisible();
     await expect(guestPage.houseRules).toBeVisible();
+    await expect(page.getByText(property.name)).toBeVisible();
   });
 
   test('should show error for invalid token', async ({ page }) => {
